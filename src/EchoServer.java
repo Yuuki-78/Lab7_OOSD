@@ -80,19 +80,24 @@ public class EchoServer extends AbstractServer {
     }
 
     /**
-     * Phân tích và thực thi các lệnh dòng lệnh dành cho Server.
+     * Phân tích và thực thi các lệnh điều khiển từ phía Server (bắt đầu bằng dấu '#').
      *
-     * @param command Chuỗi lệnh chứa dấu '#' ở đầu.
+     * @param command Chuỗi lệnh do quản trị viên nhập từ ServerConsole.
      */
     private void handleCmd(String command) {
+        // Lệnh #quit: Đóng tất cả kết nối và thoát Server hoàn toàn
         if (command.equalsIgnoreCase("#quit")) {
             try {
                 close();
             } catch (IOException e) {}
             System.exit(0);
-        } else if (command.equalsIgnoreCase("#stop")) {
+        } 
+        // Lệnh #stop: Tạm ngưng lắng nghe kết nối mới (giữ nguyên các Client đang online)
+        else if (command.equalsIgnoreCase("#stop")) {
             stopListening();
-        } else if (command.equalsIgnoreCase("#start")) {
+        } 
+        // Lệnh #start: Mở lại cổng lắng nghe kết nối từ Client
+        else if (command.equalsIgnoreCase("#start")) {
             if (!isListening()) {
                 try {
                     listen();
@@ -102,13 +107,17 @@ public class EchoServer extends AbstractServer {
             } else {
                 serverUI.display("Server is already listening.");
             }
-        } else if (command.equalsIgnoreCase("#close")) {
+        } 
+        // Lệnh #close: Ngắt kết nối toàn bộ Client và ngưng lắng nghe
+        else if (command.equalsIgnoreCase("#close")) {
             try {
                 close();
             } catch (IOException e) {
                 serverUI.display("Error closing connections.");
             }
-        } else if (command.startsWith("#setport ")) {
+        } 
+        // Lệnh #setport: Cập nhật Port mới (chỉ cho phép khi Server đã đóng hẳn và không có Client)
+        else if (command.startsWith("#setport ")) {
             if (isListening() || getNumberOfClients() > 0) {
                 serverUI.display("Error: Server must be closed to set port.");
             } else {
@@ -119,13 +128,16 @@ public class EchoServer extends AbstractServer {
                     serverUI.display("Invalid port.");
                 }
             }
-        } else if (command.equalsIgnoreCase("#getport")) {
+        } 
+        // Lệnh #getport: Hiển thị Port hiện tại của Server
+        else if (command.equalsIgnoreCase("#getport")) {
             serverUI.display("Current port: " + getPort());
-        } else {
+        } 
+        // Thông báo khi quản trị viên nhập sai cú pháp lệnh
+        else {
             serverUI.display("Unknown command: " + command);
         }
     }
-
     /**
      * Hook method được gọi tự động sau khi Server bắt đầu lắng nghe kết nối.
      */

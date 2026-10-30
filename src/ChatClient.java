@@ -65,20 +65,25 @@ public class ChatClient extends AbstractClient {
     }
 
     /**
-     * Phân tích và thực thi các lệnh điều khiển dòng lệnh của Client.
+     * Phân tích và thực thi các lệnh điều khiển từ phía Client (bắt đầu bằng dấu '#').
      *
-     * @param command Chuỗi lệnh chứa dấu '#' ở đầu.
+     * @param command Chuỗi lệnh do người dùng nhập từ giao diện UI.
      */
     private void handleCmd(String command) {
+        // Lệnh #quit: Ngắt kết nối và thoát ứng dụng
         if (command.equalsIgnoreCase("#quit")) {
             quit();
-        } else if (command.equalsIgnoreCase("#logoff")) {
+        } 
+        // Lệnh #logoff: Đóng kết nối OCSF nhưng giữ chương trình tiếp tục chạy
+        else if (command.equalsIgnoreCase("#logoff")) {
             try {
                 closeConnection();
             } catch (IOException e) {
                 clientUI.display("Error logging off.");
             }
-        } else if (command.startsWith("#login")) {
+        } 
+        // Lệnh #login: Thực hiện kết nối và đăng nhập lại (chỉ chạy khi đang disconnected)
+        else if (command.startsWith("#login")) {
             if (isConnected()) {
                 clientUI.display("Error: Already connected.");
             } else {
@@ -89,14 +94,18 @@ public class ChatClient extends AbstractClient {
                     clientUI.display("Cannot connect to server.");
                 }
             }
-        } else if (command.startsWith("#sethost ")) {
+        } 
+        // Lệnh #sethost: Cập nhật địa chỉ Host mới (chỉ cho phép khi chưa kết nối)
+        else if (command.startsWith("#sethost ")) {
             if (isConnected()) {
                 clientUI.display("Error: Cannot set host while connected.");
             } else {
                 setHost(command.substring(9).trim());
                 clientUI.display("Host set to: " + getHost());
             }
-        } else if (command.startsWith("#setport ")) {
+        } 
+        // Lệnh #setport: Cập nhật Port mới (chỉ cho phép khi chưa kết nối)
+        else if (command.startsWith("#setport ")) {
             if (isConnected()) {
                 clientUI.display("Error: Cannot set port while connected.");
             } else {
@@ -107,11 +116,17 @@ public class ChatClient extends AbstractClient {
                     clientUI.display("Invalid port number.");
                 }
             }
-        } else if (command.equalsIgnoreCase("#gethost")) {
+        } 
+        // Lệnh #gethost: Hiển thị Host hiện tại
+        else if (command.equalsIgnoreCase("#gethost")) {
             clientUI.display("Current host: " + getHost());
-        } else if (command.equalsIgnoreCase("#getport")) {
+        } 
+        // Lệnh #getport: Hiển thị Port hiện tại
+        else if (command.equalsIgnoreCase("#getport")) {
             clientUI.display("Current port: " + getPort());
-        } else {
+        } 
+        // Thông báo khi người dùng nhập sai cú pháp lệnh
+        else {
             clientUI.display("Unknown command: " + command);
         }
     }
